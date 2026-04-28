@@ -1,0 +1,28 @@
+name: CI workflow
+
+on:
+  push:
+
+jobs:
+  #Build and Push Docker Image to Docker Hub is a part of the CI workflow. It will be triggered on every push to the repository. It will build the Docker image and push it to Docker Hub.
+  build-and-push: # job's name
+    runs-on: ubuntu-latest # Free GitHub Runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # clone the code into a ubuntu runner
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v4 # Setup docker
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4 # to authenticate with Docker Hub
+        with:
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.ACTIONS }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./backend # path to the Dockerfile
+          push: true  # push the image to Docker Hub
+          tags: ${{ secrets.USERNAME }}/skillpulse-backend:sudeshna # tag for the image
